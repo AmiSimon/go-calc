@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math"
 )
 
@@ -18,7 +19,7 @@ func checkRuneMembership(stringToSearch string, runeToFind rune) int {
 	return -1
 }
 
-func simpleOperation(operator rune, a, b float64) (float64, error) {
+func operations(operator rune, a, b float64) (float64, error) {
 	switch operator {
 	case '^':
 		return math.Pow(a, b), nil
@@ -38,22 +39,25 @@ func simpleOperation(operator rune, a, b float64) (float64, error) {
 }
 
 func simplifyOperation(expression string, operatorIndex int) string {
-	expressionRunes := []rune(expression)
+	expressionEnd := expression[operatorIndex+2:]
 	if operatorIndex == 1 {
-		a := float64(expressionRunes[0] - '0')
-		b := float64(expressionRunes[2] - '0')
-
-		expressionEnd := expression[3:]
-
-		result, err := simpleOperation(expressionRunes[1], a, b)
-		if err != nil {
-			fmt.Errorf("Operation error")
-			return "error"
-		} else {
-			return fmt.Sprintf("%f", result) + expressionEnd
-		}
+		return singleStringOperation([]rune(expression), operatorIndex) + expressionEnd
 	} else {
-		// TODO: custom splitting and calculations
+		expressionStart := expression[:(operatorIndex - 1)]
+		return expressionStart + singleStringOperation([]rune(expression), operatorIndex) + expressionEnd
+	}
+}
+
+func singleStringOperation(expression []rune, operatorIndex int) string {
+	a := float64(expression[operatorIndex-1] - '0')
+	b := float64(expression[operatorIndex+1] - '0')
+
+	result, err := operations(expression[1], a, b)
+	if err != nil {
+		log.Fatal(err)
+		return "error"
+	} else {
+		return fmt.Sprintf("%f", result)
 	}
 }
 
@@ -62,7 +66,7 @@ func evaluateExpression(expression string) string {
 	for _, operator := range operators {
 		if i := checkRuneMembership(expression, operator); i != -1 {
 			isCompleted = false
-
+			// TODO: extract a, b and the operand, replace w/ result
 		}
 	}
 	if isCompleted {
@@ -74,13 +78,5 @@ func evaluateExpression(expression string) string {
 }
 
 func main() {
-	expression := "hello, this is a test"
-	for _, v := range expression {
-		fmt.Printf("%c ", v)
-	}
-	fmt.Println("")
-	// test := []rune("hi, my name is Simon, I divide (/)")
-	// for i := 0; i < len(test); i++ {
-	// 	fmt.Printf("%c", test[i])
-	// }
+
 }
