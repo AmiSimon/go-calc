@@ -53,12 +53,14 @@ func singleStringOperation(expression []rune, operatorIndex int) string {
 	a := float64(expression[operatorIndex-1] - '0')
 	b := float64(expression[operatorIndex+1] - '0')
 
-	result, err := operations(expression[1], a, b)
+	result, err := operations(expression[operatorIndex], a, b)
+
+	//fmt.Print("a: %f, b: %f, operan")
 	if err != nil {
 		log.Fatal(err)
 		return "error"
 	} else {
-		return fmt.Sprintf("%f", result)
+		return fmt.Sprintf("%.0f", result)
 	}
 }
 
@@ -66,12 +68,14 @@ func evaluateExpression(expression string) string {
 	isCompleted := true
 	for _, operator := range operators {
 		if i := checkRuneMembership(expression, operator); i != -1 {
+			expression = simplifyOperation(expression, i)
+		}
+		if i := checkRuneMembership(expression, operator); i != -1 {
 			isCompleted = false
-			simplifyOperation(expression, i)
 		}
 	}
 	if isCompleted {
-		fmt.Printf("= %s", expression)
+		fmt.Printf("= %s\n", expression)
 	} else {
 		expression = evaluateExpression(expression)
 	}
@@ -89,5 +93,5 @@ func main() {
 	}
 	inputExpression := os.Args[1]
 
-	fmt.Println(evaluateExpression(inputExpression))
+	evaluateExpression(inputExpression)
 }
