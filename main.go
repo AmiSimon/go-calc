@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"os"
 )
 
 // Valid operators for calculations. MUST be in priority order.
@@ -25,7 +26,7 @@ func operations(operator rune, a, b float64) (float64, error) {
 		return math.Pow(a, b), nil
 	case '/':
 		if b == 0 {
-			return -1, fmt.Errorf("Can't Divide by 0")
+			return -1, fmt.Errorf("can't Divide by 0")
 		}
 		return a / b, nil
 	case '*':
@@ -35,7 +36,7 @@ func operations(operator rune, a, b float64) (float64, error) {
 	case '+':
 		return a + b, nil
 	}
-	return 0, fmt.Errorf("Wrong operator")
+	return 0, fmt.Errorf("wrong operator")
 }
 
 func simplifyOperation(expression string, operatorIndex int) string {
@@ -66,7 +67,7 @@ func evaluateExpression(expression string) string {
 	for _, operator := range operators {
 		if i := checkRuneMembership(expression, operator); i != -1 {
 			isCompleted = false
-			// TODO: extract a, b and the operand, replace w/ result
+			simplifyOperation(expression, i)
 		}
 	}
 	if isCompleted {
@@ -78,5 +79,15 @@ func evaluateExpression(expression string) string {
 }
 
 func main() {
+	if len(os.Args) > 2 {
+		log.Fatal("only one argument must be used :\n    calc [OPERATION]")
+		return
+	}
+	if len(os.Args) == 1 {
+		log.Fatal("Not enough arguments for calc, try using :\n    calc [OPERATION]")
+		return
+	}
+	inputExpression := os.Args[1]
 
+	fmt.Println(evaluateExpression(inputExpression))
 }
